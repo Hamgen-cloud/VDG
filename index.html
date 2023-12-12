@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Contact Info</title>
+    <title>TXT File Editor</title>
 </head>
 <body>
-    <h1>Contact Information</h1>
-    <form action="upload.php" method="post" enctype="multipart/form-data">
-        <label for="file">Choose txt file:</label>
-        <input type="file" name="file" id="file" required accept=".txt">
-        <input type="submit" name="submit" value="Upload">
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Upload File" name="submit">
     </form>
+
+    <?php
+    if(isset($_POST["submit"])) {
+        $file = $_FILES["fileToUpload"]["tmp_name"];
+        $handle = fopen($file, "r");
+        $data = fread($handle, filesize($file));
+        fclose($handle);
+
+        $lines = explode("\n", $data);
+        $lines = array_unique($lines);
+        $data = implode("\n", $lines);
+
+        header('Content-Disposition: attachment; filename="edited_file.txt"');
+        header('Content-Type: text/plain');
+        header('Content-Length: ' . strlen($data));
+        echo $data;
+    }
+    ?>
 </body>
 </html>
